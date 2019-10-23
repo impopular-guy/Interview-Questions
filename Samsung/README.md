@@ -189,13 +189,32 @@ ____
     If you have to type 5 -> '1+4=' that requires 4 operations. There could be other ways to make '5'.  
     The goal is to find minimum operations.
 
-1. There are N pots. Every pots has some water in it. They may be partially filled . Every pot is associated with overflow number O which tell how many minimum no. of stones required for that pot to overflow. The crow know O1 to On(overflow no. for all the pots). Crow wants some K pots to be overflow. So the task is minimum number of stones he can make K pots overflow in worst case.
+1. There are N pots. Every pots has some water in it. They may be partially filled . Every pot is associated with overflow number O which tell how many minimum no. of stones required for that pot to overflow. The crow know O1 to On(overflow no. for all the pots). Crow wants some K pots to be overflow. So the task is minimum number of stones he can make K pots overflow in **worst case**.
 
     Array of overflow no--. {1,...,On}   
     Number of pots--n     
     No of pots to overflow-- k
 
     Let say two pots are there with overflow no.s {5,58}, and crow has to overflow one pot(k=1). So crow will put 5 stones in pot with  overflow no.(58), it will not overflow, then he will put in pot with overflow no.(5), hence the total no. of stones to make overflow one pot is=10.
+    
+    ```c++
+    // Solution
+    int n_pots(int ovalue[], int N, int K){
+      if(N < k)
+        return -1;
+      sort(ovalue);
+      
+      int res1 = ovalue[k - 1] * (N - k);
+      for(int i = 0; i < k; i++)
+        res1 += ovalue[i];
+      
+      int res2 = 0;
+      for(int i = N-1; i>(N-k-1); i--)
+        res2 += a[i];
+      
+      return min(res1, res2);
+    }
+    ```
 
 1. You are given 2 convex hulls. Find all the common points that lie in the intersection of these 2 convex hulls.
 
@@ -266,6 +285,46 @@ ____
     From the first line through N lines, mark the path with 3 and output it.
     In N+1 line, output the greatest number of jewels that can be picked up.
     Each test case must be output separately as a empty.
+    
+    ```c++
+    // Solution
+    int maze[11][11], path[11][11], out[11][11];
+    int N, max_jewel, i, j;
+    bool visited[11][11];
+    int pos[][4] = {{0,0,1,-1},{1,-1,0,0}};
+    
+    void search(int row, int col, int total){
+      visited[row][col] = true;
+      path[row][col] = 3;
+      if(row==0 && col==0 && maze[row][col]==2) total++;
+      if(row==N-1 && col==N-1){
+        if( total > max_jewel) {
+              max_jewel = total;
+              for(i=0;i<N;i++)
+                  for(j=0;j<N;j++)
+                      out[i][j]=path[i][j];    // save path
+        }
+        visited[row][col]=false;
+        return;
+      }
+
+      for(int it=0; it<4; it++){
+        int nrow = row + pos[0][it], ncol = col + pos[1][it];
+        if(ncol<=N-1 && ncol>=0 && nrow<=N-1 && nrow>=0)
+            if(!visited[nrow][ncol]){
+                if(arr[nrow][ncol]==2)
+                    search(nrow, ncol, total+1);
+                else
+                    search(nrow, ncol, total);
+                path[nrow][ncol] = maze[nrow][ncol];
+            } 
+      }
+      visited[row][col] = false;
+      return;
+    }
+    
+    // search(0,0,0);
+    ```
   
 1. Mr. Lee has to travel various offices abroad to assist branches of each place. But he has a problem. The airfare would be real high as all offices he has to visit are in foreign countries. He wants to visit every location only one time and return home with the lowest expense.
     Help this company-caring man calculate the lowest expense.
@@ -359,6 +418,7 @@ ____
     Note: It’s not mandatory to consider all the wormholes.
 
 1. There are n balloons and n bullets and each balloon is assigned with a particular number (point). Whenever a particular balloon is shot the no of points increases by
+    
     1.the multiplication of point assigned to balloon on left and that of right side.
 
     2.point assigned to left if no right exists
@@ -376,6 +436,28 @@ ____
     Output
 
     20
+    
+    [Solution](https://www.geeksforgeeks.org/burst-balloon-to-maximize-coins/)
+    
+    ```c++
+    int ballons_bullets(int arr[], int N){
+      int A[N + 2];
+      A[0] = 1; A[N + 1] = 1;
+      for(int i = 1; i <= N; i++)
+        A[i] = arr[i - 1];
+        
+      int dp[N + 2][N + 2] = {0};
+      for(int length = 1; length < N + 1; length++){
+        for(int left = 1; left < N - length + 2; left++){
+          int right = left + length - 1;
+          for(int last = left; last < right + 1; last++){
+            dp[left][right] = max(dp[left][right], dp[left][last-1] + A[left-1]*A[last]*A[right+1] + dp[last+1][right]);
+          }
+        }
+      }
+      return dp[1][N];
+    } 
+    ```
 
 ----
 <b name="tech">Technical Interview Questions</b>
